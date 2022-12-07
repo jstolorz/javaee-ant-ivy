@@ -1,0 +1,58 @@
+<project name="ivy example" default="resolve" xmlns:ivy="antlib:org.apache.ivy.ant">
+
+ <property file="build.properties"/>
+ <property name="lib.dir" location="${basedir}/lib"/>
+
+ <path id="commons.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="commons-lang-2.6.jar"/>
+        </fileset>
+    </path>
+
+     <path id="javaee-web-api.classpath">
+        <fileset dir="${lib.dir}">
+            <include name="javaee-web-api-8.0.1.jar"/>
+        </fileset>
+    </path>
+
+  <target name="resolve" description="resolve dependencies with ivy">
+    <ivy:resolve />
+    <ivy:retrieve sync="true" type="jar,bundle"/>
+  </target>
+
+  <target name="compile" depends="resolve" description="Compile">
+    <mkdir dir="build/classes"/>
+    <javac srcdir="src" destdir="build/classes">
+      <classpath>
+        <path refid="commons.classpath"/>
+        <path refid="jakarta-servlet.classpath"/>
+      </classpath>
+    </javac>
+  </target>
+
+  <target name="install" description="--> Install modules to local repository">
+     <property name="ivy.shared.default.root" value="C:\ivy\repository\shared"/>
+     <ivy:install 
+        organisation="commons-lang" 
+        module="commons-lang" 
+        revision="2.6"
+        transitive="true"
+        overwrite="true"
+        from="public"
+        to="shared"/>
+
+         <ivy:install 
+        organisation="javax" 
+        module="javaee-web-api" 
+        revision="8.0.1"
+        transitive="true"
+        overwrite="true"
+        from="public"
+        to="shared"/>
+  </target>
+
+  <target name="clean-cache" description="--> Clean Cache">
+    <ivy:cleancache/>
+  </target>
+
+</project>
